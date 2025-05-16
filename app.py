@@ -9,41 +9,21 @@ st.set_page_config(layout="wide")
 inicio = '2020-01-01'
 fim = '2024-12-31'
 
-# URLs Google Drive
-file_id_retornos = '1LwdNahnjNtBqskAbc_mCH-RGfsN6dBlH'
-url_retornos = f'https://drive.google.com/uc?export=download&id={file_id_retornos}'
-file_id_fund = '1T48tX8l1TWAomQYqTAFxI2c6Lz6-6qQ0'
-url_fund = f'https://drive.google.com/uc?export=download&id={file_id_fund}'
-file_id_taxas = '1j7xHdf7f5jWTlAan4sEr4WQePt3Rw5us'
-url_taxas = f'https://drive.google.com/uc?export=download&id={file_id_taxas}'
+# Importação dos dados
 
-# Importação dos dados - funções adaptadas para Streamlit
+retornos = pd.read_parquet('retornos.parquet')
+retornos = retornos[(retornos.index >= inicio) & (retornos.index <= fim)]
+retornos = retornos.dropna(axis=1, how='any')
 
-@st.cache_data(show_spinner=True)
-def importar_retornos(url, inicio, fim):
-    retornos = pd.read_parquet(url)
-    retornos = retornos[(retornos.index >= inicio) & (retornos.index <= fim)]
-    retornos = retornos.dropna(axis=1, how='any')
-    return retornos
+fundamentus = pd.read_parquet('dados_fundamentus.parquet')
+fundamentus = fundamentus[fundamentus['pl'] > 0]
+fundamentus['ult_preco'] = pd.to_datetime(fundamentus['ult_preco'], errors='coerce') # transformando as colunas de data em datetime
+fundamentus['ult_balanco'] = pd.to_datetime(fundamentus['ult_balanco'], errors='coerce')
+fundamentus = fundamentus[(fundamentus['ult_balanco'] >= '2024-12-31') & (fundamentus['ult_preco'] > '2024-12-31')]
 
-@st.cache_data(show_spinner=True)
-def importar_fund(url):
-    fundamentus = pd.read_parquet(url)
-    fundamentus = fundamentus[fundamentus['pl'] > 0]
-    fundamentus['ult_preco'] = pd.to_datetime(fundamentus['ult_preco'], errors='coerce') # transformando as colunas de data em datetime
-    fundamentus['ult_balanco'] = pd.to_datetime(fundamentus['ult_balanco'], errors='coerce')
-    fundamentus = fundamentus[
-        (fundamentus['ult_balanco'] >= '2024-12-31') &
-        (fundamentus['ult_preco'] > '2024-12-31')
-        ]
-    return fundamentus
-
-@st.cache_data(show_spinner=True)
-def importar_taxas(url, inicio, fim):
-    taxas = pd.read_parquet(url)
-    taxas = taxas[(taxas.index >= inicio) & (taxas.index <= fim)]
-    taxas = taxas.dropna(axis=1, how='any')
-    return taxas
+taxas = pd.read_parquet('taxas.parquet')
+taxas = taxas[(taxas.index >= inicio) & (taxas.index <= fim)]
+taxas = taxas.dropna(axis=1, how='any')
 
 # Funções auxiliares exatamente como no seu código
 
@@ -128,12 +108,6 @@ def interpretar_resultado(resultados, papel):
 # --- Streamlit interface ---
 
 st.title("Modelo Fama-French 3 Fatores")
-
-
-with st.spinner("Carregando dados... aguarde"):
-    retornos = importar_retornos(url_retornos, inicio, fim)
-    fundamentus = importar_fund(url_fund)
-    taxas = importar_taxas(url_taxas, inicio, fim)
 
 df_fund = filtrar_fundamentus(fundamentus, retornos)
 df_fund = book_to_market(df_fund)
