@@ -97,6 +97,12 @@ def interpretar_resultado(resultados, papel):
     texto = f"**Análise do modelo Fama-French para o ativo {papel}:**\n\n"
     texto += f"O modelo apresenta um R-quadrado de {r2:.3f}, indicando que aproximadamente {r2*100:.1f}% da variação dos retornos é explicada pelos fatores.\n\n"
 
+    alpha = coef['const']
+    p_alpha = pval['const']
+    signif_alpha = 'significativo' if p_alpha < 0.05 else 'não significativo'
+    direcao_alpha = 'positivo' if alpha > 0 else 'negativo'
+    texto += f"- O **alpha** estimado é {alpha:.4f} (p-valor = {p_alpha:.3f}), indicando um retorno anormal **{direcao_alpha}** e **{signif_alpha}**. Esse valor representa o retorno que não é explicado pelos fatores de risco do modelo.\n\n"
+
     for fator in ['mkt', 'smb', 'hml']:
         sinal = 'positiva' if coef[fator] > 0 else 'negativa'
         signif = 'significativa' if pval[fator] < 0.05 else 'não significativa'
@@ -173,6 +179,8 @@ if papel:
             - **HML**: Fator de valor (high minus low).
 
             ### Interpretação dos Coeficientes:
+
+            - **Intercepto** ($\alpha$): Representa o retorno anormal do ativo, ou seja, o retorno que não é explicado pelos fatores de risco do modelo. Um valor positivo indica que o ativo teve um desempenho melhor do que o esperado, dados os riscos assumidos. Um valor negativo sugere um desempenho inferior ao previsto pelo modelo.
 
             - **Coeficiente MKT ($\beta_{\text{MKT}}$)**: Um valor positivo indica que o ativo tem uma **correlação positiva** com o mercado, ou seja, o ativo tende a acompanhar o movimento do mercado. Um coeficiente negativo sugere que o ativo se comporta de maneira **contrária** ao mercado.
             
