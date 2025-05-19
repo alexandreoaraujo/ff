@@ -198,6 +198,20 @@ if papel:
             
             O modelo Fama-French de 3 fatores é amplamente utilizado em finanças para **avaliar** a relação entre os retornos dos ativos e os fatores de risco do mercado. Além disso, é fundamental para **análises de alocação de portfólio**, ajudando os investidores a entender os riscos e retornos associados a diferentes tipos de ativos.            """)
 
+            st.markdown("---")
+            st.markdown("### Contato e sugestões")
+
+            st.markdown("""
+            Se você tiver sugestões, comentários ou identificar algo que possa ser melhorado neste projeto, ficarei feliz em receber seu feedback.
+
+            📩 **E-mail:** [alexandre_oaraujo@hotmail.com](mailto:alexandre_oaraujo@hotmail.com)
+
+            Este projeto foi desenvolvido com fins acadêmicos e segue em constante aprimoramento.
+
+            Agradeço pela visita!
+            """)
+
+        
         # Exibe interpretação na sidebar
         interpretacao = interpretar_resultado(modelo, papel)
         st.sidebar.markdown(interpretacao)
