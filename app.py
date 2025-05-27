@@ -121,8 +121,9 @@ big, small, high, low = classificar_empresas(df_fund)
 retornos = fatores(retornos, big, small, high, low)
 dados_mercado = calc_dados_mercado(taxas)
 
-papel = st.sidebar.selectbox("Selecione o papel para análise", retornos.columns.tolist())
-
+lista_papeis = retornos.columns.tolist()
+index_padrao = lista_papeis.index('PETR4')
+papel = st.sidebar.selectbox("Selecione o papel para análise", retornos.columns.tolist(), index=index_padrao)
 
 if papel:
     dados = base_modelo(retornos, dados_mercado, papel)
